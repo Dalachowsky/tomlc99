@@ -1,0 +1,9 @@
+# Copyright (c) 2024 Kacper Dalach
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig TOMLC99
+	bool "toml support"
+
+module = TOMLC99
+module-str = tomlc99
+source "subsys/logging/Kconfig.template.log_config"

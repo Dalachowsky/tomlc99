@@ -1,100 +1,40 @@
-# tomlc99
+# zephyr-tomlc99
 
 TOML in c99; v1.0 compliant.
 
-If you are looking for a C++ library, you might try this wrapper: [https://github.com/cktan/tomlcpp](https://github.com/cktan/tomlcpp).
-
-* Compatible with [TOML v1.0.0](https://toml.io/en/v1.0.0).
-* Tested with multiple test suites, including
-[toml-lang/toml-test](https://github.com/toml-lang/toml-test) and
-[iarna/toml-spec-tests](https://github.com/iarna/toml-spec-tests).
-* Provides very simple and intuitive interface.
-
+Wrapper around tomlc99 library for Zephyr RTOS.
 
 ## Usage
 
-Please see the `toml.h` file for details. The following is a simple example that
-parses this config file:
-
-```toml
-[server]
-	host = "www.example.com"
-	port = [ 8080, 8181, 8282 ]
-```
-
-These are the usual steps for getting values from a file:
-
-1. Parse the TOML file.
-2. Traverse and locate a table in TOML.
-3. Extract values from the table.
-4. Free up allocated memory.
-
-Below is an example of parsing the values from the example table.
+Parsing simple config in Zephyr RTOS
 
 ```c
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <stdlib.h>
-#include "toml.h"
-
-static void error(const char* msg, const char* msg1)
-{
-    fprintf(stderr, "ERROR: %s%s\n", msg, msg1?msg1:"");
-    exit(1);
+const char *config = "foo = \"bar\"";
+uint8_t heap[1024];
+toml_parser_get(&heap, sizeof(heap), K_NO_WAIT);
+if (toml_parser_get(&heap, 1024, K_NO_WAIT) != 0) {
+    LOG_ERR("Error");
+    return -1;
 }
+toml_table_t *table = toml_parse_string(config);
+toml_datum_t foo = toml_string_in(table, "foo");
+LOG_INF("foo: %s", foo.u.s);
 
-
-int main()
-{
-    FILE* fp;
-    char errbuf[200];
-
-    // 1. Read and parse toml file
-    fp = fopen("sample.toml", "r");
-    if (!fp) {
-        error("cannot open sample.toml - ", strerror(errno));
-    }
-
-    toml_table_t* conf = toml_parse_file(fp, errbuf, sizeof(errbuf));
-    fclose(fp);
-
-    if (!conf) {
-        error("cannot parse - ", errbuf);
-    }
-
-    // 2. Traverse to a table.
-    toml_table_t* server = toml_table_in(conf, "server");
-    if (!server) {
-        error("missing [server]", "");
-    }
-
-    // 3. Extract values
-    toml_datum_t host = toml_string_in(server, "host");
-    if (!host.ok) {
-        error("cannot read server.host", "");
-    }
-
-    toml_array_t* portarray = toml_array_in(server, "port");
-    if (!portarray) {
-        error("cannot read server.port", "");
-    }
-
-    printf("host: %s\n", host.u.s);
-    printf("port: ");
-    for (int i = 0; ; i++) {
-        toml_datum_t port = toml_int_at(portarray, i);
-        if (!port.ok) break;
-        printf("%d ", (int)port.u.i);
-    }
-    printf("\n");
-
-    // 4. Free memory
-    free(host.u.s);
-    toml_free(conf);
-    return 0;
-}
+toml_parser_free(table);
 ```
+
+#### Heap
+
+Since toml is mostly used for config files I have decided implement a "heap buffer".
+tomlc99 makes use of `malloc()` and `free()` functions. I did not want to reserve
+heap space for parsing a config file that is done once or twice. Instead i added the `heap`
+parameter to `toml_parser_get` which is used to initialize temporary heap space.
+
+#### Limitations
+
+Only one file can be parsed at a time. This is due to my override of malloc and free functions.
+In some time I might try making my implementation nicer, this one was supposed to be quick and easy.
+
 
 #### Accessing Table Content
 
@@ -115,7 +55,7 @@ toml_array_in(tab, key);
 
 You can also interrogate the keys in a table using an integer index:
 ```c
-toml_table_t* tab = toml_parse_file(...);
+toml_table_t* tab = toml_parse_string(...);
 for (int i = 0; ; i++) {
     const char* key = toml_key_in(tab, i);
     if (!key) break;
