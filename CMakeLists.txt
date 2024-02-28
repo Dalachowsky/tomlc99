@@ -1,4 +1,4 @@
-if(CONFIG_TOMLC99)
+if(CONFIG_TOMLC99_LIBRARY)
   add_library(TOMLC99 INTERFACE)
 
   target_include_directories(TOMLC99 INTERFACE
@@ -12,6 +12,7 @@ if(CONFIG_TOMLC99)
   zephyr_library_sources(
     toml.c
     toml_wrap.c
+    toml_helpers.c
   )
   zephyr_library_link_libraries(TOMLC99)
 endif()

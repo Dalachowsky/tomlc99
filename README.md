@@ -1,8 +1,33 @@
 # zephyr-tomlc99
 
-TOML in c99; v1.0 compliant.
+Wrapper around [tomlc99](https://github.com/cktan/tomlc99) library for Zephyr RTOS.
 
-Wrapper around tomlc99 library for Zephyr RTOS.
+## Installation
+
+To install this library in a zephyr [example-application](https://github.com/zephyrproject-rtos/example-application)
+
+```sh
+cd lib
+git clone https://github.com/Dalachowsky/zephyr-tomlc99
+```
+
+in `lib/Kconfig`
+```sh
+menu "Libraries"
+
+...
+rsource "tomlc99/Kconfig"
+...
+
+endmenu
+```
+
+in `lib/CMakeLists.txt`
+```sh
+...
+add_subdirectory_ifdef(CONFIG_TOMLC99 tomlc99)
+...
+```
 
 ## Usage
 

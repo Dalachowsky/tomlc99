@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Kacper Dalach
 # SPDX-License-Identifier: Apache-2.0
 
-menuconfig TOMLC99
+config TOMLC99_LIBRARY
 	bool "toml support"
 
 module = TOMLC99
