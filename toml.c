@@ -24,7 +24,6 @@
   SOFTWARE.
 
 */
-#define _POSIX_C_SOURCE 200809L
 #include "toml.h"
 #include <assert.h>
 #include <ctype.h>
@@ -34,6 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* Provide definition of STRINGIFY */
+#include <zephyr/toolchain/common.h>
 
 static void *(*ppmalloc)(size_t) = malloc;
 static void (*ppfree)(void *) = free;
@@ -368,9 +370,7 @@ struct context_t {
   } tpath;
 };
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define FLINE __FILE__ ":" TOSTRING(__LINE__)
+#define FLINE __FILE__ ":" STRINGIFY(__LINE__)
 
 static int next_token(context_t *ctx, int dotisspecial);
 
@@ -1477,57 +1477,6 @@ fail:
   return 0;
 }
 
-toml_table_t *toml_parse_file(FILE *fp, char *errbuf, int errbufsz) {
-  int bufsz = 0;
-  char *buf = 0;
-  int off = 0;
-
-  /* read from fp into buf */
-  while (!feof(fp)) {
-
-    if (off == bufsz) {
-      int xsz = bufsz + 1000;
-      char *x = expand(buf, bufsz, xsz);
-      if (!x) {
-        snprintf(errbuf, errbufsz, "out of memory");
-        xfree(buf);
-        return 0;
-      }
-      buf = x;
-      bufsz = xsz;
-    }
-
-    errno = 0;
-    int n = fread(buf + off, 1, bufsz - off, fp);
-    if (ferror(fp)) {
-      snprintf(errbuf, errbufsz, "%s",
-               errno ? strerror(errno) : "Error reading file");
-      xfree(buf);
-      return 0;
-    }
-    off += n;
-  }
-
-  /* tag on a NUL to cap the string */
-  if (off == bufsz) {
-    int xsz = bufsz + 1;
-    char *x = expand(buf, bufsz, xsz);
-    if (!x) {
-      snprintf(errbuf, errbufsz, "out of memory");
-      xfree(buf);
-      return 0;
-    }
-    buf = x;
-    bufsz = xsz;
-  }
-  buf[off] = 0;
-
-  /* parse it, cleanup and finish */
-  toml_table_t *ret = toml_parse(buf, errbuf, errbufsz);
-  xfree(buf);
-  return ret;
-}
-
 static void xfree_kval(toml_keyval_t *p) {
   if (!p)
     return;
@@ -2195,11 +2144,18 @@ int toml_rtod_ex(toml_raw_t src, double *ret_, char *buf, int buflen) {
   /* cap with NUL */
   *p = 0;
 
+  /* TODO
+   * Parsing values of type double not supported since
+   * there is no implementation of strtod.
+   * Commented out to prevent compile errors
+   */
   /* Run strtod on buf to get the value */
-  char *endp;
-  errno = 0;
-  *ret = strtod(buf, &endp);
-  return (errno || *endp) ? -1 : 0;
+  //char *endp;
+  //errno = 0;
+  //*ret = strtod(buf, &endp);
+  //return (errno || *endp) ? -1 : 0;
+  *ret = 0;
+  return -1;
 }
 
 int toml_rtod(toml_raw_t src, double *ret_) {

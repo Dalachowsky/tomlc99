@@ -43,11 +43,6 @@ typedef struct toml_table_t toml_table_t;
 typedef struct toml_array_t toml_array_t;
 typedef struct toml_datum_t toml_datum_t;
 
-/* Parse a file. Return a table on success, or 0 otherwise.
- * Caller must toml_free(the-return-value) after use.
- */
-TOML_EXTERN toml_table_t *toml_parse_file(FILE *fp, char *errbuf, int errbufsz);
-
 /* Parse a string containing the full config.
  * Return a table on success, or 0 otherwise.
  * Caller must toml_free(the-return-value) after use.
@@ -97,7 +92,6 @@ TOML_EXTERN int toml_array_nelem(const toml_array_t *arr);
 TOML_EXTERN toml_datum_t toml_string_at(const toml_array_t *arr, int idx);
 TOML_EXTERN toml_datum_t toml_bool_at(const toml_array_t *arr, int idx);
 TOML_EXTERN toml_datum_t toml_int_at(const toml_array_t *arr, int idx);
-TOML_EXTERN toml_datum_t toml_double_at(const toml_array_t *arr, int idx);
 TOML_EXTERN toml_datum_t toml_timestamp_at(const toml_array_t *arr, int idx);
 /* ... retrieve array or table using index. */
 TOML_EXTERN toml_array_t *toml_array_at(const toml_array_t *arr, int idx);
@@ -113,8 +107,6 @@ TOML_EXTERN toml_datum_t toml_string_in(const toml_table_t *arr,
                                         const char *key);
 TOML_EXTERN toml_datum_t toml_bool_in(const toml_table_t *arr, const char *key);
 TOML_EXTERN toml_datum_t toml_int_in(const toml_table_t *arr, const char *key);
-TOML_EXTERN toml_datum_t toml_double_in(const toml_table_t *arr,
-                                        const char *key);
 TOML_EXTERN toml_datum_t toml_timestamp_in(const toml_table_t *arr,
                                            const char *key);
 /* .. retrieve array or table using key. */

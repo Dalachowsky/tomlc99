@@ -28,7 +28,8 @@
 #include "../toml.h"
 #include <zephyr/kernel.h>
 
-#define toml_parse_file(x, y, z) error - implementation for toml_parse_file is not provided
+#define toml_double_in(x, y) error - parsing doubles not supported
+#define toml_double_at(x, y) error - parsing doubles not supported
 
 int toml_parser_get(uint8_t *heap, size_t heap_size, k_timeout_t timeout);
 int toml_parser_free(void);

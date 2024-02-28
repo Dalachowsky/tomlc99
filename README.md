@@ -60,6 +60,7 @@ parameter to `toml_parser_get` which is used to initialize temporary heap space.
 Only one file can be parsed at a time. This is due to my override of malloc and free functions.
 In some time I might try making my implementation nicer, this one was supposed to be quick and easy.
 
+Parsing float values is not supported since no `strtod()` implementation
 
 #### Accessing Table Content
 
@@ -72,7 +73,7 @@ using one of these functions:
 toml_string_in(tab, key);
 toml_bool_in(tab, key);
 toml_int_in(tab, key);
-toml_double_in(tab, key);
+//toml_double_in(tab, key); Not supported yet
 toml_timestamp_in(tab, key);
 toml_table_in(tab, key);
 toml_array_in(tab, key);
@@ -102,7 +103,7 @@ To obtain the content of an array, use a valid index and call one of these funct
 toml_string_at(arr, idx);
 toml_bool_at(arr, idx);
 toml_int_at(arr, idx);
-toml_double_at(arr, idx);
+//toml_double_at(arr, idx); Not supported yet
 toml_timestamp_at(arr, idx);
 toml_table_at(arr, idx);
 toml_array_at(arr, idx);
