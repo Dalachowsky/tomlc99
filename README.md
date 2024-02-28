@@ -45,7 +45,7 @@ toml_table_t *table = toml_parse_string(config);
 toml_datum_t foo = toml_string_in(table, "foo");
 LOG_INF("foo: %s", foo.u.s);
 
-toml_parser_free(table);
+toml_parser_free();
 ```
 
 #### Heap
@@ -126,35 +126,3 @@ if (host.ok) {
 ```
 
 ** IMPORTANT: if the accessed value is a string or a timestamp, you must call `free(datum.u.s)` or `free(datum.u.ts)` respectively after usage. **
-
-## Building and installing
-
-A normal *make* suffices. You can also simply include the
-`toml.c` and `toml.h` files in your project.
-
-Invoking `make install` will install the header and library files into
-/usr/local/{include,lib}.
-
-Alternatively, specify `make install prefix=/a/file/path` to install into
-/a/file/path/{include,lib}.
-
-## Testing
-
-To test against the standard test set provided by toml-lang/toml-test:
-
-```sh
-% make
-% cd test1
-% bash build.sh   # do this once
-% bash run.sh     # this will run the test suite
-```
-
-
-To test against the standard test set provided by iarna/toml:
-
-```sh
-% make
-% cd test2
-% bash build.sh   # do this once
-% bash run.sh     # this will run the test suite
-```
