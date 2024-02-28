@@ -37,6 +37,20 @@ int toml_parser_free(void);
 
 toml_table_t *toml_parse_string(char *conf);
 
+int toml_string_in_or(const toml_table_t *arr,
+                      const char *key,
+                      char *out,
+                      size_t outsz,
+                      const char *default_value);
+int toml_bool_in_or(const toml_table_t *arr,
+                    const char *key,
+                    bool *out,
+                    bool default_value);
+int toml_int_in_or(const toml_table_t *arr,
+                   const char *key,
+                   int *out,
+                   int default_value);
+
 #endif /* __TOML_H_ */
 
 /* end of group toml */
